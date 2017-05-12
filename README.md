@@ -43,8 +43,8 @@ dolores 服务端 提供RestFull API
       "title": [ // 职位，可能有多个
         "Developer"
       ],
+      "avatarURL": "http://www.dolores.store/static/avatar/b49kehg6h302jg98oi70.png", // 用户头像url
       "gender": 0, // 用户性别 0: 女 1: 男 其他: 未知
-      "avatarURL": "http://www.dolores.store/static/avatar/b49kehg6h302jg98oi70.png" // 用户头像url
     }
   ],
   "version": 1
