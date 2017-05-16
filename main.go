@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -56,8 +55,6 @@ func main() {
 		panic(err)
 	}
 	org = _org
-
-	fmt.Print(org)
 
 	r := gin.New()
 	r.Use(gin.Logger())
