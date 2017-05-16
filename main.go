@@ -1,61 +1,72 @@
 package main
 
 import (
+	"flag"
 	"fmt"
+	"io/ioutil"
+	"net/http"
+	"os"
+
+	yaml "gopkg.in/yaml.v2"
 
 	"github.com/DoloresTeam/organization"
 	"github.com/gin-gonic/gin"
 )
 
-// Department ...
-type Department struct {
-	ID       string `json:"id"`
-	Name     string `json:"name"`
-	ParentID string `json:"pid"`
+// Config ...
+type Config struct {
+	Host    string
+	Port    int
+	RootDN  string
+	RootPWD string
+	Subffix string
 }
 
-// Person ...
-type Person struct {
-	ID     string   `json:"id"`
-	CN     string   `json:"name"`
-	SN     string   `json:"realName"`
-	Title  string   `json:"title"`
-	UnitID []string `json:"departmentIDs"`
-}
+var config = Config{}
+var org *organization.Organization
 
 func main() {
 
-	// d1 := &Department{`1`, `D1`, ``}
-	// d2 := &Department{`2`, `D2`, ``}
-	// d3 := &Department{`3`, `D3`, `1`}
-	// d4 := &Department{`4`, `D4`, `1`}
-	//
-	// p1 := &Person{`1`, `m1`, `M1`, `developer`, []string{`1`}}
-	// p2 := &Person{`2`, `m2`, `M2`, `developer`, []string{`2`}}
-	// p3 := &Person{`3`, `m3`, `M3`, `developer`, []string{`1`, `3`}}
-	org, err := organization.NewOrganizationWithSimpleBind(`dc=dolores,dc=store`, `localhost`, `cn=admin,dc=dolores,dc=store`, `secret`, 389)
+	configFilePath := flag.String(`path`, `./conf.yaml`, `配置文件路径`)
+
+	flag.Parse()
+
+	_, err := os.Stat(*configFilePath)
+	if !(err == nil || os.IsExist(err)) {
+		panic(`配置文件不存在`)
+	}
+	data, _ := ioutil.ReadFile(*configFilePath)
+	err = yaml.Unmarshal(data, &config)
+	if err != nil {
+		panic(`配置文件不正确`)
+	}
+
+	_org, err := organization.NewOrganizationWithSimpleBind(config.Subffix,
+		config.Host,
+		config.RootDN,
+		config.RootPWD,
+		config.Port)
 	if err != nil {
 		panic(err)
 	}
-	departments, err := org.OrganizationUnitByMemberID(`b49kehg6h302jg98oi70`)
-	if err != nil {
-		fmt.Println(err)
-		return
+	org = _org
+
+	fmt.Print(org)
+
+	r := gin.New()
+	r.Use(gin.Logger())
+	r.Use(gin.Recovery())
+
+	clientAuth := ClientJWTMiddleware()
+
+	r.POST(`/login`, clientAuth.LoginHandler)
+
+	auth := r.Group(`/api/v1`, clientAuth.MiddlewareFunc())
+	{
+		auth.GET(`/refresh_token`, clientAuth.RefreshHandler)
+		auth.GET(`/profile`, profile)
+		auth.POST(`/update_avatar`, updateAvatarURL)
 	}
-	members, err := org.OrganizationMemberByMemberID(`b49kehg6h302jg98oi70`)
-	if err != nil {
-		fmt.Println(err)
-	}
 
-	router := gin.Default()
-
-	router.GET(`/organization`, func(c *gin.Context) {
-		c.JSON(200, map[string]interface{}{
-			`departments`: departments,
-			`members`:     members,
-			`version`:     1,
-		})
-	})
-
-	router.Run(`:3280`)
+	http.ListenAndServe(`:3280`, r)
 }
