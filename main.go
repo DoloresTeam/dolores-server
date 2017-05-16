@@ -66,6 +66,7 @@ func main() {
 		auth.GET(`/refresh_token`, clientAuth.RefreshHandler)
 		auth.GET(`/profile`, profile)
 		auth.POST(`/update_avatar`, updateAvatarURL)
+		auth.GET(`/organization`, organizationMap)
 	}
 
 	http.ListenAndServe(`:3280`, r)

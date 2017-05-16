@@ -47,3 +47,29 @@ func updateAvatarURL(c *gin.Context) {
 		}
 	}
 }
+
+func organizationMap(c *gin.Context) {
+
+	id, _ := c.Get(`userID`)
+
+	members, err := org.OrganizationMemberByMemberID(id.(string))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, map[string]string{
+			`err`: err.Error(),
+		})
+		return
+	}
+	departments, err := org.OrganizationUnitByMemberID(id.(string))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, map[string]string{
+			`err`: err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]interface{}{
+		`members`:     members,
+		`departments`: departments,
+		`version`:     1,
+	})
+}
