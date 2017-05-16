@@ -1,52 +1,39 @@
 # dolores-server
-dolores 服务端 提供RestFull API
+
+dolores 服务端 提供REST API
+
+## API 测试地址
+```
+  http://www.dolores.store:3280
+```
 
 ## 接口列表
 
-### /organization
-###### 参数: 无
-###### 返回值:
-``` json
-{
-  "departments": [ // 返回当前登录用户所有可见的部门， 父部门总是早于子部门返回
-    {
-      "description": "This is test unit's description",
-      "id": "b4a1bldhfpcl3m5lhohg",
-      "name": "Test",
-    },
-    {
-      "description": "This is test unit's description", // 部门的描述备注信息
-      "id": "b49kdrg6h302hrpggg8g", // 部门ID
-      "name": "Test", // 部门名称
-      "pid": "b4a1bldhfpcl3m5lhohg" // 父部门ID
-    },
-    {
-      "description": "This is test unit's description",
-      "id": "b4a1cqlhfpcl6964kqtg",
-      "name": "Test",
-      "pid": "b49kdrg6h302hrpggg8g"
-    }
-  ],
-  "members": [ // 返回当前登录用户的所有可见员工
-    {
-      "departmentIDs": [ // 员工所在部门id 一个员工可能在多个部门
-        "b49kdrg6h302hrpggg8g"
-      ],
-      "easemobAccount": "", // 环信ID
-      "easemobPassword": "", // 环信密码
-      "email": [ // 用户邮箱，可能有多个邮箱
-        "aoxianglele@icloud.com"
-      ],
-      "id": "b49kehg6h302jg98oi70", // 用户ID
-      "name": "Kevin.Gong", // 显示用的名字
-      "realName": "巩祥", // 真名
-      "title": [ // 职位，可能有多个
-        "Developer"
-      ],
-      "avatarURL": "http://www.dolores.store/static/avatar/b49kehg6h302jg98oi70.png", // 用户头像url
-      "gender": 0, // 用户性别 0: 女 1: 男 其他: 未知
-    }
-  ],
-  "version": 1
-}
-```
+#### **客户端**
+
+登录：  `[POST]`  ` /login`  
+参数： body中用json编码 username password  
+备注：下面所有 `/api/v1` 路径下的接口都需要添加授权头，具体做法：
+在 `http header` 中添加 `Authorization=Dolores + 登录接口返回的Token`(注意Dolores后面有一个空格) 
+
+----------
+刷新Token： `[GET]`   `/api/v1/resfresh_token`  
+参数：无  
+备注: `Token` 的有效期为24小时，最大刷新间隔为1星期  
+
+----------
+获取个人信息： `[GET]`  `/api/v1/profile`  
+参数：无  
+备注:  
+
+----------
+更新头像：`[GET]` `/api/v1/update_avatar`  
+参数：body中用json编码 avatar  
+备注: 需要客户端自己上传图片到七牛，然后将上传后的`url`回传到服务器
+
+----------
+获取组织架构：`[GET]` `/api/v1/organization`  
+参数：无  
+备注:  
+
+#### **管理后台**
