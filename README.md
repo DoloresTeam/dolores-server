@@ -9,7 +9,7 @@ dolores 服务端 提供REST API
 
 ## 接口列表
 
-#### **客户端**
+### **客户端**
 
 **登录**：  `[POST]`  ` /login`  
 参数： body中用json编码 username password  
@@ -22,7 +22,7 @@ dolores 服务端 提供REST API
 备注: `Token` 的有效期为24小时，最大刷新间隔为1星期  
 
 ----------
-获取个人信息： `[GET]`  `/api/v1/profile`  
+**获取个人信息**： `[GET]`  `/api/v1/profile`  
 参数：无  
 备注:  
 
@@ -36,4 +36,4 @@ dolores 服务端 提供REST API
 参数：无  
 备注:  
 
-#### **管理后台**
+### **管理后台**
