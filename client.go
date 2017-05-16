@@ -3,6 +3,8 @@ package main
 import (
 	"net/http"
 
+	"qiniupkg.com/api.v7/kodo"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -72,4 +74,28 @@ func organizationMap(c *gin.Context) {
 		`departments`: departments,
 		`version`:     1,
 	})
+}
+
+func qiniuUploadToken(c *gin.Context) {
+
+	k := kodo.New(0, nil)
+	// 设置上传的策略
+	policy := &kodo.PutPolicy{
+		Scope: `dolores`,
+		//设置Token过期时间  5 分钟
+		Expires: 3600 * 5,
+	}
+	// 生成一个上传token
+	token := k.MakeUptoken(policy)
+
+	if len(token) != 0 {
+		c.JSON(http.StatusOK, map[string]string{
+			`token`: token,
+		})
+	} else {
+		c.JSON(http.StatusInternalServerError, map[string]string{
+			`err`: `can't construct token`,
+		})
+	}
+
 }

@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"os"
 
+	"qiniupkg.com/api.v7/conf"
+
 	yaml "gopkg.in/yaml.v2"
 
 	"github.com/DoloresTeam/organization"
@@ -26,6 +28,10 @@ var config = Config{}
 var org *organization.Organization
 
 func main() {
+
+	// 配置七牛的 ak 和 sk
+	conf.ACCESS_KEY = `e1IUbuH8t2D-L9M3s9UmddOT_3YU7xk0VnB1Ws-8`
+	conf.SECRET_KEY = `PTnbxt20SV47kkA-viiyfBrIdVlM4sqLDpv_wYJN`
 
 	configFilePath := flag.String(`path`, `./conf.yaml`, `配置文件路径`)
 
@@ -64,6 +70,7 @@ func main() {
 	auth := r.Group(`/api/v1`, clientAuth.MiddlewareFunc())
 	{
 		auth.GET(`/refresh_token`, clientAuth.RefreshHandler)
+		auth.GET(`/upload_token`, qiniuUploadToken)
 		auth.GET(`/profile`, profile)
 		auth.POST(`/update_avatar`, updateAvatarURL)
 		auth.GET(`/organization`, organizationMap)
