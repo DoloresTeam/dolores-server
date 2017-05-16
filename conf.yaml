@@ -1,5 +1,0 @@
-host: 127.0.0.1
-port: 389
-subffix: dc=dolores,dc=store
-rootdn: cn=admin,dc=dolores,dc=store # 注意rootDN的后缀要和上面一致
-rootpwd: secret
