@@ -36,4 +36,9 @@ dolores 服务端 提供REST API
 参数：无  
 备注:  
 
+----------
+**获取七牛上传Token**：`[GET]` `/api/v1/upload_token`  
+参数：无  
+备注:  token有效期为5分钟  
+
 ### **管理后台**
