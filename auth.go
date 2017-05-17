@@ -19,6 +19,11 @@ func ClientJWTMiddleware() *jwt.GinJWTMiddleware {
 			return id, err == nil
 		},
 		TokenHeadName: `Dolores`,
+		Unauthorized: func(c *gin.Context, code int, msg string) {
+			c.JSON(code, map[string]string{
+				`errMsg`: msg,
+			})
+		},
 	}
 
 	return authMiddleware
@@ -38,6 +43,11 @@ func ServerJWTMiddleware() *jwt.GinJWTMiddleware {
 			return ``, false
 		},
 		TokenHeadName: `Dolores`,
+		Unauthorized: func(c *gin.Context, code int, msg string) {
+			c.JSON(code, map[string]string{
+				`errMsg`: msg,
+			})
+		},
 	}
 
 	return authMiddleware
