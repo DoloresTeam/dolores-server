@@ -73,5 +73,14 @@ func main() {
 		auth.GET(`/organization`, organizationMap)
 	}
 
+	adminAuth := ServerJWTMiddleware()
+
+	r.POST(`/admin/login`, adminAuth.LoginHandler)
+	admin := r.Group(`/admin/v1`, adminAuth.MiddlewareFunc())
+	{
+		admin.GET(`type`, func(c *gin.Context) {
+
+		})
+	}
 	http.ListenAndServe(`:3280`, r)
 }
