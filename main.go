@@ -81,61 +81,29 @@ func main() {
 	admin := r.Group(`/admin/v1`)
 
 	{
-		admin.GET(`type`, types)
-		admin.GET(`type/:id`, func(c *gin.Context) {
-			t, e := org.TypeByID(c.Param(`id`))
-			if e != nil {
-				c.JSON(http.StatusInternalServerError, map[string]interface{}{
-					`err`: e,
-				})
-				return
-			}
-			if t[`isUnit`].(bool) {
-				t[`category`] = `Department`
-			} else {
-				t[`category`] = `Member`
-			}
-			delete(t, `isUnit`)
-			c.JSON(http.StatusOK, t)
-		})
-		admin.PUT(`type/:id`, func(c *gin.Context) {
-			id := c.Param(`id`)
-			var body map[string]string
-			e := c.BindJSON(&body)
-			if e != nil {
-				return
-			}
-			e = org.ModifyType(id, body[`cn`], body[`description`], body[`category`] == `Department`)
-			if e != nil {
-				c.JSON(http.StatusInternalServerError, map[string]string{
-					`err`: e.Error(),
-				})
-			} else {
-				c.JSON(http.StatusOK, map[string]string{
-					`id`: id,
-				})
-			}
-		})
-		admin.DELETE(`type/:id`, func(c *gin.Context) {
-			t, e := org.TypeByID(c.Param(`id`))
-			if e != nil {
-				c.JSON(http.StatusInternalServerError, map[string]string{
-					`err`: e.Error(),
-				})
-				return
-			}
-			e = org.DelType(t[`id`].(string), t[`isUnit`].(bool))
-			if e != nil {
-				c.JSON(http.StatusInternalServerError, map[string]string{
-					`err`: e.Error(),
-				})
-			} else {
-				c.JSON(http.StatusOK, map[string]interface{}{`data`: t})
-			}
-		})
+		admin.GET(`type`, fetchTypes)
+		admin.GET(`type/:id`, typeByID)
+		admin.PUT(`type/:id`, editType)
+		admin.DELETE(`type/:id`, delType)
 		admin.POST(`type`, createType)
 
-		admin.GET(`permission`, permissions)
+		admin.GET(`permission`, fetchPermissions)
+		admin.GET(`u_permission`, fetchPermissionByRoleUPID)
+		admin.GET(`p_permission`, fetchPermissionByRolePPID)
+		admin.GET(`permission/:id`, permissionByID)
+		admin.PUT(`permission/:id`, editPermission)
+		admin.DELETE(`permission/:id`, delPermission)
+		admin.POST(`permission`, createPermission)
+
+		admin.GET(`role`, fetchRoles)
+
+		admin.GET(`member`, fetchMembers)
+
+		admin.GET(`department`, fetchDepartment)
+		admin.POST(`department`, createDepartment)
+		admin.GET(`department/:id`, departmentByID)
 	}
+
 	http.ListenAndServe(`:3280`, r)
+
 }

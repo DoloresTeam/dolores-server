@@ -9,6 +9,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+const (
+	department = `Department`
+	member     = `Member`
+)
+
 // CORSMiddleware ...
 func CORSMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -28,98 +33,28 @@ func CORSMiddleware() gin.HandlerFunc {
 	}
 }
 
-func types(c *gin.Context) {
-
-	pid := c.Query(`permission_id`)
-	if len(pid) > 0 {
-
-		ts, e := org.TypeByPermissionID(pid)
-		if e != nil {
-			c.JSON(http.StatusInternalServerError, map[string]interface{}{
-				`err`: e.Error(),
-			})
-			return
-		}
-		c.JSON(http.StatusOK, map[string]interface{}{
-			`total`: 1,
-			`data`:  ts,
-			`page`:  1,
-		})
-		return
-	}
-
-	isUnit := c.Query(`isUnit`) == `true`
-
-	_, pageSize, cookie := findPageControl(c)
-
-	r, e := org.Types(isUnit, pageSize, cookie)
-	if e != nil {
-		c.JSON(http.StatusInternalServerError, map[string]string{
-			`err`: e.Error(),
-		})
-	}
-	sendResult(c, r)
-}
-
-func createType(c *gin.Context) {
-
-	var body map[string]string
-	err := c.BindJSON(&body)
-	if err != nil {
-		return
-	}
-	category := body[`category`]
-
-	isUnit := category == `1`
-	id, err := org.AddType(body[`cn`], body[`description`], isUnit)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, map[string]string{
-			`err`: err.Error(),
-		})
-		return
-	}
-
-	c.JSON(http.StatusOK, map[string]string{`id`: id})
-}
-
-func permissions(c *gin.Context) {
-
-	isUnit := c.Query(`isUnit`) == `true`
-
-	_, pageSize, cookie := findPageControl(c)
-
-	r, e := org.Permissions(isUnit, pageSize, cookie)
-	if e != nil {
-		c.JSON(http.StatusInternalServerError, map[string]string{
-			`err`: e.Error(),
-		})
-	}
-	sendResult(c, r)
-}
-
-func findPageControl(c *gin.Context) (uint32, uint32, []byte) {
+func findPageControl(c *gin.Context) (page uint32, pageSize uint32, cookie []byte) {
 
 	p, e := strconv.Atoi(c.DefaultQuery(`pageSize`, `25`))
 	if e != nil {
 		p = 25
 	}
-	pageSize := uint32(p)
+	pageSize = uint32(p)
 
 	p0, e := strconv.Atoi(c.DefaultQuery(`page`, `1`))
 	if e != nil {
 		p0 = 1
 	}
-	page := uint32(p0)
+	page = uint32(p0)
 	if page == 0 {
 		page = 1
 	}
 
-	var cookie []byte
 	if len(c.Query(`pageCookie`)) > 0 {
 		cookie = []byte(cookie)
 	}
 
-	return page, pageSize, cookie
+	return
 }
 
 func sendResult(c *gin.Context, r *organization.SearchResult) {
@@ -136,5 +71,11 @@ func sendResult(c *gin.Context, r *organization.SearchResult) {
 		`cookie`:   string(r.Cookie),
 		`data`:     r.Data,
 		`page`:     page,
+	})
+}
+
+func sendError(c *gin.Context, e error) {
+	c.JSON(http.StatusInternalServerError, map[string]string{
+		`err`: e.Error(),
 	})
 }
