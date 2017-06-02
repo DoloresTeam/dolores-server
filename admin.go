@@ -76,6 +76,6 @@ func sendResult(c *gin.Context, r *organization.SearchResult) {
 
 func sendError(c *gin.Context, e error) {
 	c.JSON(http.StatusInternalServerError, map[string]string{
-		`err`: e.Error(),
+		`message`: e.Error(),
 	})
 }

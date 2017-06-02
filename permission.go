@@ -6,6 +6,18 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type Permission struct {
+	Unit        string `json:"category" binding:"required"`
+	Name        string `json:"cn" binding:"required"`
+	Description string
+	MType       []string
+	UType       []string
+}
+
+func (p *Permission) rbacTypes() []string {
+	return append(p.MType, p.UType...)
+}
+
 func fetchPermissionByRoleUPID(c *gin.Context) {
 	fetchPermissionByRole(true, c)
 }
@@ -52,24 +64,15 @@ func fetchPermissions(c *gin.Context) {
 }
 
 func createPermission(c *gin.Context) {
-	var body map[string]interface{}
-	err := c.BindJSON(&body) // 会发送错误信息
+	var p Permission
+	err := c.BindJSON(&p) // 会发送错误信息
 	if err != nil {
 		return
 	}
 
-	category := body[`category`]
-
-	isUnit := category == `1`
-	name := body[`name`].(string)
-	desc := body[`description`].(string)
-	types := body[`rbacType`].([]string)
-
-	id, err := org.AddPermission(name, desc, types, isUnit)
+	id, err := org.AddPermission(p.Name, p.Description, p.rbacTypes(), p.Unit == `department`)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, map[string]string{
-			`err`: err.Error(),
-		})
+		sendError(c, err)
 	} else {
 		c.JSON(http.StatusOK, map[string]string{
 			`id`: id,
@@ -80,40 +83,37 @@ func createPermission(c *gin.Context) {
 func permissionByID(c *gin.Context) {
 	p, e := org.PermissionByID(c.Param(`id`))
 	if e != nil {
-		c.JSON(http.StatusInternalServerError, map[string]interface{}{
-			`err`: e,
-		})
+		sendError(c, e)
 		return
 	}
-	// 做点小处理 对前端友好
-	if p[`isUnit`].(bool) {
-		p[`category`] = department
+
+	isUnit := p[`isUnit`].(bool)
+	if isUnit {
+		p[`category`] = `部门权限`
+		p[`uType`] = p[`rbacType`]
 	} else {
-		p[`category`] = member
+		p[`category`] = `员工权限`
+		p[`mType`] = p[`rbacType`]
 	}
-	delete(p, `isUnit`)
+
+	delete(p, `dn`)
+	delete(p, `rbacType`)
+
 	c.JSON(http.StatusOK, p)
 }
 
 func editPermission(c *gin.Context) {
 
 	id := c.Param(`id`)
-	var body map[string]interface{}
-	e := c.BindJSON(&body)
-	if e != nil {
+	var p Permission
+	err := c.BindJSON(&p) // 会发送错误信息
+	if err != nil {
 		return
 	}
 
-	name := body[`name`].(string)
-	desc := body[`description`].(string)
-	types := body[`rbacType`].([]string)
-	isUnit := body[`category`].(string) == department
-
-	e = org.ModifyPermission(id, name, desc, types, isUnit)
-	if e != nil {
-		c.JSON(http.StatusInternalServerError, map[string]string{
-			`err`: e.Error(),
-		})
+	err = org.ModifyPermission(id, p.Name, p.Description, p.rbacTypes(), p.Unit == `部门权限`)
+	if err != nil {
+		sendError(c, err)
 	} else {
 		c.JSON(http.StatusOK, map[string]string{
 			`id`: id,
@@ -121,21 +121,18 @@ func editPermission(c *gin.Context) {
 	}
 }
 
+// 删除逻辑
+// 保证没人引用这个Permission
 func delPermission(c *gin.Context) {
-
 	p, e := org.PermissionByID(c.Param(`id`))
 	if e != nil {
-		c.JSON(http.StatusInternalServerError, map[string]string{
-			`err`: e.Error(),
-		})
+		sendError(c, e)
 		return
 	}
 
 	e = org.DelPermission(p[`id`].(string), p[`isUnit`].(bool))
 	if e != nil {
-		c.JSON(http.StatusInternalServerError, map[string]string{
-			`err`: e.Error(),
-		})
+		sendError(c, e)
 		return
 	}
 	c.JSON(http.StatusOK, p)

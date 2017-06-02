@@ -50,7 +50,7 @@ func createType(c *gin.Context) {
 	}
 
 	category := body[`category`]
-	isUnit := category == `1`
+	isUnit := category == department
 
 	id, err := org.AddType(body[`cn`], body[`description`], isUnit)
 	if err != nil {
@@ -102,20 +102,21 @@ func editType(c *gin.Context) {
 	}
 }
 
+// Type 删除逻辑
+// 如果有权限包含该Type 则提示，不能删除成功
+// 如果有员工属于该Type则提示，不能删除成功
 func delType(c *gin.Context) {
 
-	t, e := org.TypeByID(c.Param(`id`))
+	id := c.Param(`id`)
+	t, e := org.TypeByID(id)
 	if e != nil {
-		c.JSON(http.StatusInternalServerError, map[string]string{
-			`err`: e.Error(),
-		})
+		sendError(c, e)
 		return
 	}
+
 	e = org.DelType(t[`id`].(string), t[`isUnit`].(bool))
 	if e != nil {
-		c.JSON(http.StatusInternalServerError, map[string]string{
-			`err`: e.Error(),
-		})
+		sendError(c, e)
 	} else {
 		c.JSON(http.StatusOK, map[string]interface{}{`data`: t})
 	}
