@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	log "github.com/sirupsen/logrus"
 )
 
 func fetchMembers(c *gin.Context) {
@@ -82,6 +83,23 @@ func createMember(c *gin.Context) {
 	if err != nil {
 		sendError(c, err)
 		return
+	}
+
+	thirdPwd := newPassword()
+	r, err := em.RegisterSignelUser(id, thirdPwd)
+	if err != nil {
+		log.WithField(`resource`, `member`).Warn(fmt.Sprintf(`register user failed %v`, err))
+	}
+	if !r {
+		log.WithField(`resource`, `member`).Warn(`register user failed with no reason`)
+	}
+	// 将用户名和密码更新到ldapserver
+	err = org.ModifyMember(id, map[string][]string{
+		`thirdAccount`:  []string{id},
+		`thirdPassword`: []string{thirdPwd},
+	})
+	if err != nil {
+		log.WithField(`resource`, `memeber`).Warn(fmt.Sprintf(`modify member third account info occured error %v`, err))
 	}
 
 	c.JSON(http.StatusOK, map[string]string{`id`: id})

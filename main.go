@@ -10,6 +10,7 @@ import (
 
 	yaml "gopkg.in/yaml.v2"
 
+	"github.com/DoloresTeam/easemob-resty"
 	"github.com/DoloresTeam/organization"
 	"github.com/gin-gonic/gin"
 )
@@ -21,16 +22,20 @@ type Config struct {
 	RootDN  string
 	RootPWD string
 	Subffix string
+
+	QNAccessKey string
+	QNSecretKey string
+
+	EMClientID string
+	EMSecret   string
+	EMBaseURL  string
 }
 
 var config = Config{}
 var org *organization.Organization
+var em *easemob.EM
 
 func main() {
-
-	// 配置七牛的 ak 和 sk
-	conf.ACCESS_KEY = `e1IUbuH8t2D-L9M3s9UmddOT_3YU7xk0VnB1Ws-8`
-	conf.SECRET_KEY = `PTnbxt20SV47kkA-viiyfBrIdVlM4sqLDpv_wYJN`
 
 	configFilePath := flag.String(`path`, `./conf.yaml`, `配置文件路径`)
 
@@ -46,6 +51,12 @@ func main() {
 		panic(`配置文件不正确`)
 	}
 
+	// 七牛配置
+	conf.ACCESS_KEY = config.QNAccessKey
+	conf.SECRET_KEY = config.QNSecretKey
+
+	// 环信配置
+
 	_org, err := organization.NewOrganizationWithSimpleBind(config.Subffix,
 		config.Host,
 		config.RootDN,
@@ -55,6 +66,7 @@ func main() {
 		panic(err.Error())
 	}
 	org = _org
+	em = easemob.New(config.EMClientID, config.EMSecret, config.EMBaseURL)
 
 	r := gin.New()
 	r.Use(gin.Logger())
