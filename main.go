@@ -96,6 +96,10 @@ func main() {
 		admin.POST(`permission`, createPermission)
 
 		admin.GET(`role`, fetchRoles)
+		admin.POST(`role`, createRole)
+		admin.GET(`role/:id`, roleByID)
+		admin.PUT(`role/:id`, editRole)
+		admin.DELETE(`role/:id`, delRole)
 
 		admin.GET(`member`, fetchMembers)
 
