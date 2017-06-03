@@ -102,6 +102,7 @@ func main() {
 		admin.DELETE(`role/:id`, delRole)
 
 		admin.GET(`member`, fetchMembers)
+		admin.POST(`member`, createMember)
 
 		admin.GET(`department`, fetchDepartment)
 		admin.POST(`department`, createDepartment)
