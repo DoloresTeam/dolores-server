@@ -2,25 +2,35 @@ package main
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
 
 func fetchTypes(c *gin.Context) {
-
 	pid := c.Query(`permission_id`) // 有可能是查找某个权限包含的所有类型
-
 	if len(pid) > 0 {
-
 		ts, e := org.TypeByPermissionID(pid)
 		if e != nil {
-			c.JSON(http.StatusInternalServerError, map[string]interface{}{
-				`err`: e.Error(),
-			})
+			sendError(c, e)
 			return
 		}
 		c.JSON(http.StatusOK, map[string]interface{}{
-			`total`: 1,
+			`total`: len(ts),
+			`data`:  ts,
+			`page`:  1,
+		})
+		return
+	}
+	idStr := c.Query(`ids`) // 通过一组ID 获取type
+	if len(idStr) > 0 {
+		ts, e := org.TypeByIDs(strings.Split(idStr, `,`))
+		if e != nil {
+			sendError(c, e)
+			return
+		}
+		c.JSON(http.StatusOK, map[string]interface{}{
+			`total`: len(ts),
 			`data`:  ts,
 			`page`:  1,
 		})
@@ -33,9 +43,8 @@ func fetchTypes(c *gin.Context) {
 
 	r, e := org.Types(isUnit, pageSize, cookie)
 	if e != nil {
-		c.JSON(http.StatusInternalServerError, map[string]string{
-			`err`: e.Error(),
-		})
+		sendError(c, e)
+		return
 	}
 	sendResult(c, r)
 }
@@ -67,9 +76,7 @@ func typeByID(c *gin.Context) {
 
 	t, e := org.TypeByID(c.Param(`id`))
 	if e != nil {
-		c.JSON(http.StatusInternalServerError, map[string]interface{}{
-			`err`: e,
-		})
+		sendError(c, e)
 		return
 	}
 	// 做点小处理 对前端友好

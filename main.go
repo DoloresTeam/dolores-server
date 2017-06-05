@@ -115,10 +115,15 @@ func main() {
 
 		admin.GET(`member`, fetchMembers)
 		admin.POST(`member`, createMember)
+		admin.GET(`member/:id`, memberByID)
+		admin.DELETE(`member/:id`, delMember)
+		admin.PUT(`member/:id`, editMember)
 
 		admin.GET(`department`, fetchDepartment)
 		admin.POST(`department`, createDepartment)
 		admin.GET(`department/:id`, departmentByID)
+		admin.PUT(`department/:id`, editDepartment)
+		admin.DELETE(`department/:id`, delDepartment)
 	}
 
 	http.ListenAndServe(`:3280`, r)
