@@ -56,6 +56,7 @@ func main() {
 	conf.SECRET_KEY = config.QNSecretKey
 
 	// 环信配置
+	em = easemob.New(config.EMClientID, config.EMSecret, config.EMBaseURL)
 
 	_org, err := organization.NewOrganizationWithSimpleBind(config.Subffix,
 		config.Host,
@@ -66,7 +67,6 @@ func main() {
 		panic(err.Error())
 	}
 	org = _org
-	em = easemob.New(config.EMClientID, config.EMSecret, config.EMBaseURL)
 
 	r := gin.New()
 	r.Use(gin.Logger())

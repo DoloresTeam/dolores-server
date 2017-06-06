@@ -12,14 +12,13 @@ func profile(c *gin.Context) {
 
 	id, _ := c.Get(`userID`)
 
-	member, err := org.MemberByID(id.(string), true)
+	member, err := org.MemberByID(id.(string), false, true)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, map[string]interface{}{
 			`err`: err.Error(),
 		})
 	} else {
-		delete(member, `rbacRole`)
-		delete(member, `rbacType`)
+		delete(member, `dn`)
 
 		c.JSON(http.StatusOK, member)
 	}

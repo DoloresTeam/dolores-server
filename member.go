@@ -122,7 +122,7 @@ func editMember(c *gin.Context) {
 }
 
 func memberByID(c *gin.Context) {
-	ms, err := org.MemberByID(c.Param(`id`), true)
+	ms, err := org.MemberByID(c.Param(`id`), true, false)
 	if err != nil {
 		sendError(c, err)
 		return
