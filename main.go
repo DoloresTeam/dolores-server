@@ -12,6 +12,7 @@ import (
 
 	"github.com/DoloresTeam/easemob-resty"
 	"github.com/DoloresTeam/organization"
+	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 )
 
@@ -68,10 +69,10 @@ func main() {
 	}
 	org = _org
 
-	r := gin.New()
-	r.Use(gin.Logger())
-	r.Use(gin.Recovery())
+	r := gin.Default()
 	r.Use(CORSMiddleware()) // 允许跨站请求
+
+	r.Use(static.Serve(`/`, static.LocalFile(`./webroot`, true)))
 
 	clientAuth := ClientJWTMiddleware()
 
@@ -125,5 +126,4 @@ func main() {
 	}
 
 	http.ListenAndServe(`:3280`, r)
-
 }
