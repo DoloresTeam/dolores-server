@@ -36,6 +36,9 @@ func mapToMemberInfo(body map[string]interface{}) map[string][]string {
 	if email, ok := body[`email`].(string); ok {
 		memberInfo[`email`] = []string{email}
 	}
+	if gender, ok := body[`gender`].(string); ok {
+		memberInfo[`gender`] = []string{gender}
+	}
 	if telephoneNumber, ok := body[`telephoneNumber`].(string); ok {
 		memberInfo[`telephoneNumber`] = []string{telephoneNumber}
 	}

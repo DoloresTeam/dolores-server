@@ -45,7 +45,7 @@ func ServerJWTMiddleware() *jwt.GinJWTMiddleware {
 		TokenHeadName: `Dolores`,
 		Unauthorized: func(c *gin.Context, code int, msg string) {
 			c.JSON(code, map[string]string{
-				`errMsg`: msg,
+				`message`: msg,
 			})
 		},
 	}

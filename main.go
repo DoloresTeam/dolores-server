@@ -86,12 +86,10 @@ func main() {
 		auth.GET(`/organization`, organizationMap)
 	}
 
-	// adminAuth := ServerJWTMiddleware()
+	adminAuth := ServerJWTMiddleware()
+	r.POST(`/admin/login`, adminAuth.LoginHandler)
 
-	// r.POST(`/admin/login`, adminAuth.LoginHandler)
-
-	admin := r.Group(`/admin/v1`)
-
+	admin := r.Group(`/admin/v1`, adminAuth.MiddlewareFunc())
 	{
 		admin.GET(`type`, fetchTypes)
 		admin.GET(`type/:id`, typeByID)
