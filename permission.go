@@ -111,7 +111,7 @@ func editPermission(c *gin.Context) {
 		return
 	}
 
-	err = org.ModifyPermission(id, p.Name, p.Description, p.rbacTypes(), p.Unit == `部门权限`)
+	err = org.ModifyPermission(id, p.Name, p.Description, p.rbacTypes())
 	if err != nil {
 		sendError(c, err)
 	} else {
@@ -124,16 +124,13 @@ func editPermission(c *gin.Context) {
 // 删除逻辑
 // 保证没人引用这个Permission
 func delPermission(c *gin.Context) {
-	p, e := org.PermissionByID(c.Param(`id`))
-	if e != nil {
-		sendError(c, e)
+	id := c.Param(`id`)
+	err := org.DelPermission(id)
+	if err != nil {
+		sendError(c, err)
 		return
 	}
-
-	e = org.DelPermission(p[`id`].(string), p[`isUnit`].(bool))
-	if e != nil {
-		sendError(c, e)
-		return
-	}
-	c.JSON(http.StatusOK, p)
+	c.JSON(http.StatusOK, map[string]string{
+		`id`: id,
+	})
 }
