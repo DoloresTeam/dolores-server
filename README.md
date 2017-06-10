@@ -37,6 +37,11 @@ dolores 服务端 提供REST API
 备注:  
 
 ----------
+**组织架构增量更新**：`[GET]` `/api/v1/sync_organization/:version`  
+参数：version 客户端组织架构版本号, `/api/v1/organization`  会返回当前版本号  
+备注:  
+
+----------
 **获取七牛上传Token**：`[GET]` `/api/v1/upload_token`  
 参数：无  
 备注:  token有效期为5分钟  
