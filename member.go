@@ -45,8 +45,12 @@ func mapToMemberInfo(body map[string]interface{}) map[string][]string {
 	if title, ok := body[`title`].(string); ok {
 		memberInfo[`title`] = []string{title}
 	}
-	if unitID, ok := body[`unitID`].(string); ok {
-		memberInfo[`unitID`] = []string{unitID}
+	if unitIDs, ok := body[`unitID`].([]interface{}); ok {
+		var ids []string
+		for _, id := range unitIDs {
+			ids = append(ids, id.(string))
+		}
+		memberInfo[`unitID`] = ids
 	}
 	if rbacType, ok := body[`rbacType`].(string); ok {
 		memberInfo[`rbacType`] = []string{rbacType}

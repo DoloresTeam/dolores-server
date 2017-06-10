@@ -50,28 +50,39 @@ func updateAvatarURL(c *gin.Context) {
 }
 
 func organizationMap(c *gin.Context) {
-
 	id, _ := c.Get(`userID`)
-
-	members, err := org.OrganizationMemberByMemberID(id.(string))
+	departments, members, version, err := org.OrganizationView(id.(string))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, map[string]string{
-			`err`: err.Error(),
-		})
-		return
-	}
-	departments, err := org.OrganizationUnitByMemberID(id.(string))
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, map[string]string{
-			`err`: err.Error(),
-		})
+		sendError(c, err)
 		return
 	}
 
 	c.JSON(http.StatusOK, map[string]interface{}{
-		`members`:     members,
 		`departments`: departments,
-		`version`:     1,
+		`members`:     members,
+		`version`:     version,
+	})
+}
+
+func syncOrganization(c *gin.Context) {
+	id, _ := c.Get(`userID`)
+	version := c.Param(`version`)
+	if !org.IsValidVersion(version) {
+		c.JSON(http.StatusOK, map[string]interface{}{
+			`needRefetchOrganization`: true,
+			`version`:                 version,
+		})
+		return
+	}
+	version, json, err := org.GenerateChangeLogFromVersion(version, id.(string))
+	if err != nil {
+		sendError(c, err)
+		return
+	}
+	c.JSON(http.StatusOK, map[string]interface{}{
+		`version`: version,
+		`logs`:    json,
+		`needRefetchOrganization`: false,
 	})
 }
 

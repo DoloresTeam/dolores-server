@@ -85,6 +85,7 @@ func main() {
 		auth.GET(`/profile`, profile)
 		auth.POST(`/update_avatar`, updateAvatarURL)
 		auth.GET(`/organization`, organizationMap)
+		auth.GET(`sync_organization/:version`, syncOrganization)
 	}
 
 	adminAuth := ServerJWTMiddleware()
