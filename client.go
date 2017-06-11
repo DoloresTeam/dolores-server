@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"net/http"
 
 	"qiniupkg.com/api.v7/kodo"
@@ -14,9 +15,7 @@ func profile(c *gin.Context) {
 
 	member, err := org.MemberByID(id.(string), false, true)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, map[string]interface{}{
-			`err`: err.Error(),
-		})
+		sendError(c, err)
 	} else {
 		delete(member, `dn`)
 
@@ -32,17 +31,13 @@ func updateAvatarURL(c *gin.Context) {
 
 	err := c.BindJSON(&body)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, map[string]string{
-			`err`: `缺少avatarURL 参数`,
-		})
+		sendError(c, errors.New(`缺少avatarURL 参数`))
 	} else {
 		err = org.ModifyMember(id.(string), map[string][]string{
 			`labeledURI`: []string{body[`avatarURL`].(string)},
 		})
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, map[string]string{
-				`err`: err.Error(),
-			})
+			sendError(c, err)
 		} else {
 			c.Status(http.StatusOK)
 		}
@@ -96,16 +91,13 @@ func qiniuUploadToken(c *gin.Context) {
 		Expires: 3600 * 5,
 	}
 	// 生成一个上传token
-	token := k.MakeUptoken(policy)
-
-	if len(token) != 0 {
-		c.JSON(http.StatusOK, map[string]string{
-			`token`: token,
-		})
-	} else {
-		c.JSON(http.StatusInternalServerError, map[string]string{
-			`err`: `can't construct token`,
-		})
+	token, err := k.MakeUptokenWithSafe(policy)
+	if err != nil {
+		sendError(c, err)
+		return
 	}
 
+	c.JSON(http.StatusOK, map[string]string{
+		`token`: token,
+	})
 }
