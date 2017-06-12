@@ -26,3 +26,4 @@ dolores-server
 conf.yaml
 build
 deploy.sh
+webroot
