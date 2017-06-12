@@ -24,3 +24,5 @@ _testmain.go
 *.prof
 dolores-server
 conf.yaml
+build
+deploy.sh
