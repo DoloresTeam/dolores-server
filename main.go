@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"io/ioutil"
 	"net/http"
@@ -35,6 +36,14 @@ type Config struct {
 var config = Config{}
 var org *organization.Organization
 var em *easemob.EM
+var organizationViewChangeEvent = make(chan []string, 10)
+var com = new(func(arg1 []string) error {
+	if em != nil {
+		return em.SendCMDMsg(arg1, `sync_organization`)
+	} else {
+		return errors.New(`em is nil`)
+	}
+})
 
 func main() {
 
@@ -63,10 +72,18 @@ func main() {
 		config.Host,
 		config.RootDN,
 		config.RootPWD,
-		config.Port)
+		config.Port,
+		organizationViewChangeEvent)
 	if err != nil {
 		panic(err.Error())
 	}
+	go func() {
+		for {
+			mids := <-organizationViewChangeEvent
+			com.push(mids)
+		}
+	}()
+
 	org = _org
 
 	r := gin.Default()

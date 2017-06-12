@@ -50,9 +50,7 @@ func findPageControl(c *gin.Context) (page uint32, pageSize uint32, cookie []byt
 		page = 1
 	}
 
-	if len(c.Query(`pageCookie`)) > 0 {
-		cookie = []byte(cookie)
-	}
+	cookie = []byte(c.DefaultQuery(`pageCookie`, ``))
 
 	return
 }

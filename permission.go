@@ -70,7 +70,7 @@ func createPermission(c *gin.Context) {
 		return
 	}
 
-	id, err := org.AddPermission(p.Name, p.Description, p.rbacTypes(), p.Unit == `department`)
+	id, err := org.AddPermission(p.Name, p.Description, p.rbacTypes(), p.Unit == department)
 	if err != nil {
 		sendError(c, err)
 	} else {
