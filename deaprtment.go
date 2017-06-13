@@ -39,9 +39,10 @@ func createDepartment(c *gin.Context) {
 	parentID := body[`parentID`]
 
 	info := map[string][]string{
-		`ou`:          []string{body[`cn`]},
+		`ou`:          []string{body[`ou`]},
 		`description`: []string{body[`description`]},
 		`rbacType`:    []string{body[`rbacType`]},
+		`priority`:    []string{body[`priority`]},
 	}
 
 	id, err := org.AddUnit(parentID, info)
@@ -60,9 +61,10 @@ func editDepartment(c *gin.Context) {
 		return
 	}
 	info := map[string][]string{
-		`ou`:          []string{body[`cn`]},
+		`ou`:          []string{body[`ou`]},
 		`description`: []string{body[`description`]},
 		`rbacType`:    []string{body[`rbacType`]},
+		`priority`:    []string{body[`priority`]},
 	}
 
 	id := c.Param(`id`)
