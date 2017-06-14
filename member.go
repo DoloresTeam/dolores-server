@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/fogleman/gg"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 )
@@ -38,6 +39,9 @@ func mapToMemberInfo(body map[string]interface{}) map[string][]string {
 	}
 	if gender, ok := body[`gender`].(string); ok {
 		memberInfo[`gender`] = []string{gender}
+	}
+	if priority, ok := body[`priority`].(string); ok {
+		memberInfo[`priority`] = []string{priority}
 	}
 	if telephoneNumber, ok := body[`telephoneNumber`].(string); ok {
 		memberInfo[`telephoneNumber`] = []string{telephoneNumber}
@@ -104,7 +108,23 @@ func createMember(c *gin.Context) {
 		log.WithField(`resource`, `memeber`).Warn(fmt.Sprintf(`modify member third account info occured error %v`, err))
 	}
 
+	// go generatorAvatar(id, body[`name`].(string))
 	c.JSON(http.StatusOK, map[string]string{`id`: id})
+}
+
+func generatorAvatar(id, name string) {
+
+	dc := gg.NewContext(210, 210)
+	dc.DrawCircle(105, 105, 105)
+	dc.SetHexColor(`#03A9F4`)
+	dc.Fill()
+	dc.SetRGB(1, 1, 1)
+	dc.LoadFontFace(`../STHeiti Medium.ttc`, 80)
+	dc.DrawStringAnchored(name, 105, 105, 0.5, 0.5)
+	dc.Stroke()
+
+	dc.SavePNG("out.png")
+
 }
 
 func editMember(c *gin.Context) {
