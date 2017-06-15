@@ -1,49 +1,76 @@
 # dolores-server
+服务端主要做两件事：
 
-dolores 服务端 提供REST API
+ - 为客户端提供组织架构 REST API
+ - 提供一个用于管理组织机构后台的 Web APP
 
-## API 测试地址
+### 安装
+
+*请确认您已经安装数据库，如未安装[请移步这里](https://github.com/DoloresTeam/dolores-ldap-init)*
+
+ - 直接下载软件包
+ [Mac](http://oq1inckvi.bkt.clouddn.com/dolores-mac.zip)、 [Linux](http://oq1inckvi.bkt.clouddn.com/dolores-linux.zip)、 [windows](http://oq1inckvi.bkt.clouddn.com/dolores-win.zip)
+ 
+ - 从源码编译安装
+服务端用`go`语言开发，所以您需要配置`go` 语言开发环境 [传送门](https://golang.org)
+
+**0x00.  获取源码**
+``` bash
+go get -u https://github.com/DoloresTeam/dolores-server
 ```
-  http://www.dolores.store:3280
+**0x01.  编译**
+``` bash
+cd dolores-server && go build
 ```
 
-## 接口列表
+**0x02.  获取后台管理程序**
 
-### **客户端**
+ - 直接下载编译后的[压缩包](http://oq1inckvi.bkt.clouddn.com/webRoot.zip)
+ - 通过源码自己编译 [传送门](https://github.com/DoloresTeam/dolores-admin)
 
-**登录**：  `[POST]`  ` /login`  
-参数： body中用json编码 username password  
-备注：下面所有 `/api/v1` 路径下的接口都需要添加授权头，具体做法：
-在 `http header` 中添加 `Authorization=Dolores + 登录接口返回的Token`(注意Dolores后面有一个空格) 
+获取后台管理文件，将其copy至服务端程序同目录的 `webRoot` 子目录
 
-----------
-**刷新Token**： `[GET]`   `/api/v1/resfresh_token`  
-参数：无  
-备注: `Token` 的有效期为24小时，最大刷新间隔为1星期  
+**0x03. 获取配置文件模版**
 
-----------
-**获取个人信息**： `[GET]`  `/api/v1/profile`  
-参数：无  
-备注:  
+[配置文件模版下载](http://oq1inckvi.bkt.clouddn.com/conf.yaml)  
 
-----------
-**更新头像**：`[GET]` `/api/v1/update_avatar`  
-参数：body中用json编码 avatar  
-备注: 需要客户端自己上传图片到七牛，然后将上传后的`url`回传到服务器
+获取配置文件以后，将其与服务端程序放在同目录(或者运行服务端程序是使用 `--path` 指定配置文件)
+![目录结构](./asset/files.png)
+### 配置
 
-----------
-**获取组织架构**：`[GET]` `/api/v1/organization`  
-参数：无  
-备注:  
+1. dolores使用了环信的云服务来处理IM消息，所以您需要先注册去环信注册一个账号获取 `ClientID` 、`Secret`。[点击立即申请](http://docs.easemob.com/im/000quickstart/10register)
 
-----------
-**组织架构增量更新**：`[GET]` `/api/v1/sync_organization/:version`  
-参数：version 客户端组织架构版本号, `/api/v1/organization`  会返回当前版本号  
-备注:  
+2.  dolores 使用七牛存储用户头像等其他文件，所以你需要注册一个七牛账号获取 `AccessKey`、`SecretKey`. [点击立即申请](https://developer.qiniu.com/kodo/manual/1233/console-quickstart)
 
-----------
-**获取七牛上传Token**：`[GET]` `/api/v1/upload_token`  
-参数：无  
-备注:  token有效期为5分钟  
+默认配置文件如下：
+``` yaml
+#open-ldap
+host: 127.0.0.1 # 数据库主机
+port: 389 # 数据库端口
+subffix: dc=dolores,dc=store # ldap mdb 数据库subffix
+rootdn: cn=admin,dc=dolores,dc=store # 注意rootDN的后缀要和上面一致
+rootpwd: dolores
+#七牛
+qnaccesskey: ReplaceMe # 目前用来存储头像
+qnsecretkey: ReplaceMe
+# 环信
+emclientid: ReplaceMe
+emsecret: ReplaceMe
+embaseurl: https://a1.easemob.com/ReplaceMe #注意这里，后面拼接自己的company org_name app
 
-### **管理后台**
+```
+
+ - open-ldap： 数据库连接信息
+ - 七牛：七牛云存储信息
+ -  环信：IM消息服务连接信息
+
+配置结束，当前目录类似于这样：
+
+ 
+### 运行
+
+``` bash
+./dolores-server --path conf.yaml
+```
+
+好了，如果没有错误消息，那么恭喜你`dolores-server` 配置安装成功。你可以访问`http://localhost:3280`管理组织架构，然后使用[dolores-ios](https://github.com/DoloresTeam/dolores-ios)来测试组织架构更新，聊天等功能。
