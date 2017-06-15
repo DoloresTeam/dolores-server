@@ -4,14 +4,13 @@
  - 为客户端提供组织架构 REST API
  - 提供一个用于管理组织机构后台的 Web APP
 
-### 安装
-
 *请确认您已经安装数据库，如未安装[请移步这里](https://github.com/DoloresTeam/dolores-ldap-init)*
 
- - 直接下载软件包
+### 通过软件包安装
+
  [Mac](http://oq1inckvi.bkt.clouddn.com/dolores-mac.zip)、 [Linux](http://oq1inckvi.bkt.clouddn.com/dolores-linux.zip)、 [windows](http://oq1inckvi.bkt.clouddn.com/dolores-win.zip)
  
- - 从源码编译安装
+### 从源码编译安装
 服务端用`go`语言开发，所以您需要配置`go` 语言开发环境 [传送门](https://golang.org)
 
 **0x00.  获取源码**
