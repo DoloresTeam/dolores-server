@@ -108,19 +108,21 @@ func createMember(c *gin.Context) {
 		log.WithField(`resource`, `memeber`).Warn(fmt.Sprintf(`modify member third account info occured error %v`, err))
 	}
 
-	go func() {
-
-		a, err := avatarGenerator.Gen(memberInfo[`name`][0])
+	// 生成默认头像
+	go func(n, id string) {
+		a, err := avatarGenerator.Gen(n)
 		if err != nil {
 			log.WithField(`resource`, `generate avatar`).Warn(err)
 			return
 		}
-		_, err = uploadFileToQiNiu(a, id)
-		if err != nil {
-			log.WithField(`resource`, `upload avatar`).Warn(err)
-			return
-		}
-	}()
+		go func(string, string) {
+			_, err = uploadFileToQiNiu(a, id)
+			if err != nil {
+				log.WithField(`resource`, `upload avatar`).Warn(err)
+				return
+			}
+		}(a, id)
+	}(memberInfo[`name`][0], id)
 
 	c.JSON(http.StatusOK, map[string]string{`id`: id})
 }

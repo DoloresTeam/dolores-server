@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"qiniupkg.com/api.v7/kodo"
 	"qiniupkg.com/api.v7/kodocli"
 )
@@ -34,11 +32,5 @@ func uploadFileToQiNiu(filePath, key string) (*PutRet, error) {
 	var ret PutRet
 	// 调用PutFile方式上传，这里的key需要和上传指定的key一致
 	err = uploader.PutFile(nil, &ret, token, key, filePath, nil)
-	if err != nil {
-		return nil, err
-	}
-	// 打印返回的信息
-	fmt.Println(ret)
-
-	return &ret, nil
+	return &ret, err
 }
