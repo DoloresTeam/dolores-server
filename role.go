@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// Role ...
 type Role struct {
 	Name        string `json:"cn"`
 	Description string

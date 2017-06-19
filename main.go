@@ -11,6 +11,7 @@ import (
 
 	yaml "gopkg.in/yaml.v2"
 
+	"github.com/DoloresTeam/dolores-avatar"
 	"github.com/DoloresTeam/easemob-resty"
 	"github.com/DoloresTeam/organization"
 	"github.com/gin-gonic/contrib/static"
@@ -31,18 +32,28 @@ type Config struct {
 	EMClientID string
 	EMSecret   string
 	EMBaseURL  string
+
+	AvatarFontFacePath string
 }
 
 var config = Config{}
+
+// 自动生成头像服务
+var avatarGenerator *avatar.Generator
+
+// 封装调用组织上架构数据库逻辑
 var org *organization.Organization
+
+// 封装调用环信API
 var em *easemob.EM
+
+// 将短时间内多次服务器通知合并起来，发给客户端
 var organizationViewChangeEvent = make(chan []string, 10)
 var com = new(func(arg1 []string) error {
 	if em != nil {
 		return em.SendCMDMsg(arg1, `sync_organization`)
-	} else {
-		return errors.New(`em is nil`)
 	}
+	return errors.New(`em is nil`)
 })
 
 func main() {
@@ -60,6 +71,13 @@ func main() {
 	if err != nil {
 		panic(`配置文件不正确`)
 	}
+
+	// 自动生成头像服务
+	_avatarGenerator, err := avatar.New(105, config.AvatarFontFacePath, 80)
+	if err != nil {
+		panic(err)
+	}
+	avatarGenerator = _avatarGenerator
 
 	// 七牛配置
 	conf.ACCESS_KEY = config.QNAccessKey

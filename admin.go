@@ -37,7 +37,7 @@ func findPageControl(c *gin.Context) (page uint32, pageSize uint32, cookie []byt
 
 	p, e := strconv.Atoi(c.DefaultQuery(`pageSize`, `25`))
 	if e != nil {
-		p = 25
+		p = 100
 	}
 	pageSize = uint32(p)
 

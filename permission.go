@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// Permission ...
 type Permission struct {
 	Unit        string `json:"category" binding:"required"`
 	Name        string `json:"cn" binding:"required"`

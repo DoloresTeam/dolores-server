@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/fogleman/gg"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 )
@@ -103,28 +102,27 @@ func createMember(c *gin.Context) {
 	err = org.ModifyMember(id, map[string][]string{
 		`thirdAccount`:  []string{id},
 		`thirdPassword`: []string{thirdPwd},
+		`labeledURI`:    []string{id}, // 顺便在同一个请求中添加默认头像 如果创建用户成功，则会在后台自动生成默认头像
 	})
 	if err != nil {
 		log.WithField(`resource`, `memeber`).Warn(fmt.Sprintf(`modify member third account info occured error %v`, err))
 	}
 
-	// go generatorAvatar(id, body[`name`].(string))
+	go func() {
+
+		a, err := avatarGenerator.Gen(memberInfo[`name`][0])
+		if err != nil {
+			log.WithField(`resource`, `generate avatar`).Warn(err)
+			return
+		}
+		_, err = uploadFileToQiNiu(a, id)
+		if err != nil {
+			log.WithField(`resource`, `upload avatar`).Warn(err)
+			return
+		}
+	}()
+
 	c.JSON(http.StatusOK, map[string]string{`id`: id})
-}
-
-func generatorAvatar(id, name string) {
-
-	dc := gg.NewContext(210, 210)
-	dc.DrawCircle(105, 105, 105)
-	dc.SetHexColor(`#03A9F4`)
-	dc.Fill()
-	dc.SetRGB(1, 1, 1)
-	dc.LoadFontFace(`../STHeiti Medium.ttc`, 80)
-	dc.DrawStringAnchored(name, 105, 105, 0.5, 0.5)
-	dc.Stroke()
-
-	dc.SavePNG("out.png")
-
 }
 
 func editMember(c *gin.Context) {
