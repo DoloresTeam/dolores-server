@@ -30,12 +30,13 @@ func basicProfiles(c *gin.Context) {
 		sendError(c, err)
 		return
 	}
-	result := make(map[string]interface{}, 0)
+	var result []map[string]string
 	for _, m := range members {
-		result[m[`id`].(string)] = map[string]string{
+		result = append(result, map[string]string{
+			`id`:         m[`id`].(string),
 			`name`:       m[`name`].(string),
 			`labeledURI`: m[`labeledURI`].(string),
-		}
+		})
 	}
 	c.JSON(http.StatusOK, result)
 }
