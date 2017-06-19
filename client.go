@@ -23,6 +23,23 @@ func profile(c *gin.Context) {
 	}
 }
 
+func basicProfiles(c *gin.Context) {
+	ids := c.QueryArray(`ids`)
+	members, err := org.MemberByIDs(ids, false, false)
+	if err != nil {
+		sendError(c, err)
+		return
+	}
+	result := make(map[string]interface{}, 0)
+	for _, m := range members {
+		result[m[`id`].(string)] = map[string]string{
+			`name`:       m[`name`].(string),
+			`labeledURI`: m[`labeledURI`].(string),
+		}
+	}
+	c.JSON(http.StatusOK, result)
+}
+
 func updateAvatarURL(c *gin.Context) {
 
 	id, _ := c.Get(`userID`)

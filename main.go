@@ -118,6 +118,7 @@ func main() {
 		auth.GET(`/refresh_token`, clientAuth.RefreshHandler)
 		auth.GET(`/upload_token`, qiniuUploadToken)
 		auth.GET(`/profile`, profile)
+		auth.GET(`/basic_profile`, basicProfiles)
 		auth.POST(`/update_avatar`, updateAvatarURL)
 		auth.GET(`/organization`, organizationMap)
 		auth.GET(`sync_organization/:version`, syncOrganization)
