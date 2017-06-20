@@ -121,7 +121,8 @@ func main() {
 		auth.GET(`/basic_profile`, basicProfiles)
 		auth.POST(`/update_avatar`, updateAvatarURL)
 		auth.GET(`/organization`, organizationMap)
-		auth.GET(`sync_organization/:version`, syncOrganization)
+		auth.GET(`/sync_organization/:version`, syncOrganization)
+		auth.POST(`/modify_password`, modifyPassword)
 	}
 
 	adminAuth := ServerJWTMiddleware()

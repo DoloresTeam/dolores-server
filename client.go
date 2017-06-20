@@ -9,6 +9,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// ModifyPassword ...
+type ModifyPassword struct {
+	OriginalPassword string `json:"originalPassword"`
+	NewPassword      string `json:"newPassword"`
+}
+
 func profile(c *gin.Context) {
 
 	id, _ := c.Get(`userID`)
@@ -60,6 +66,24 @@ func updateAvatarURL(c *gin.Context) {
 			c.Status(http.StatusOK)
 		}
 	}
+}
+
+func modifyPassword(c *gin.Context) {
+	id, _ := c.Get(`userID`)
+
+	var mp ModifyPassword
+	err := c.BindJSON(&mp)
+	if err != nil {
+		return
+	}
+
+	err = org.ModifyPassword(id.(string), mp.OriginalPassword, mp.NewPassword)
+	if err != nil {
+		sendError(c, err)
+		return
+	}
+
+	c.Status(http.StatusOK)
 }
 
 func organizationMap(c *gin.Context) {
