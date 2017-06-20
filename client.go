@@ -1,7 +1,7 @@
 package main
 
 import (
-	"errors"
+	"log"
 	"net/http"
 
 	"qiniupkg.com/api.v7/kodo"
@@ -47,25 +47,44 @@ func basicProfiles(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
-func updateAvatarURL(c *gin.Context) {
-
+func updateProfile(c *gin.Context) {
 	id, _ := c.Get(`userID`)
 
 	body := make(map[string]interface{}, 0)
-
 	err := c.BindJSON(&body)
 	if err != nil {
-		sendError(c, errors.New(`缺少avatarURL 参数`))
-	} else {
-		err = org.ModifyMember(id.(string), map[string][]string{
-			`labeledURI`: []string{body[`avatarURL`].(string)},
-		})
-		if err != nil {
-			sendError(c, err)
-		} else {
-			c.Status(http.StatusOK)
-		}
+		log.Fatal(err)
+		return
 	}
+	// 防止用户信息被恶意修改，这里需要做一些判断
+	info := make(map[string][]string, 0)
+
+	if u, ok := body[`labeledURI`].(string); ok {
+		info[`labeledURI`] = []string{u}
+	}
+	if cn, ok := body[`cn`].(string); ok {
+		info[`cn`] = []string{cn}
+	}
+	if title, ok := body[`title`].(string); ok {
+		info[`title`] = []string{title}
+	}
+	if email, ok := body[`email`].(string); ok {
+		info[`email`] = []string{email}
+	}
+	if len(info) == 0 {
+		c.Status(http.StatusOK)
+		return
+	}
+
+	err = org.ModifyMember(id.(string), map[string][]string{
+		`labeledURI`: []string{body[`avatarURL`].(string)},
+	})
+
+	if err != nil {
+		sendError(c, err)
+		return
+	}
+	c.Status(http.StatusOK)
 }
 
 func modifyPassword(c *gin.Context) {
