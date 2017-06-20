@@ -24,7 +24,7 @@ func profile(c *gin.Context) {
 }
 
 func basicProfiles(c *gin.Context) {
-	ids := c.QueryArray(`ids`)
+	ids := c.QueryArray(`id[]`)
 	members, err := org.MemberByIDs(ids, false, false)
 	if err != nil {
 		sendError(c, err)
