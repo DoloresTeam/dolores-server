@@ -4,6 +4,7 @@ import (
 	"errors"
 	"flag"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 
@@ -73,9 +74,9 @@ func main() {
 	}
 
 	// 自动生成头像服务
-	_avatarGenerator, err := avatar.New(105, config.AvatarFontFacePath, 80)
+	_avatarGenerator, err := avatar.New(105, config.AvatarFontFacePath, 65)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 	avatarGenerator = _avatarGenerator
 
