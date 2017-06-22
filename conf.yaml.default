@@ -1,0 +1,15 @@
+#open-ldap
+host: 127.0.01
+port: 389
+subffix: dc=dolores,dc=store
+rootdn: cn=admin,dc=dolores,dc=store # 注意rootDN的后缀要和上面一致
+rootpwd: dolores
+#七牛
+qnaccesskey: xxxxxxxxxx-xxxxxxxxxx-xxxxxxxxxx-8 # 目前用来存储头像
+qnsecretkey: XXXXXXXXXXXX-XXXXXXXXXXXX_XXXX
+# 环信
+emclientid: XXXXXXXXXXXXXXXXXXXXXXXX
+emsecret: XXXXXXXXXXXXXXXXXXXXXXXX
+embaseurl: https://a1.easemob.com/{org_name}/{appName}
+#头像服务
+avatarfontfacepath: ./asset/msyh.ttf
