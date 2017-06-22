@@ -19,21 +19,21 @@ func new(f func([]string) error) *combine {
 }
 
 func (c *combine) push(p []string) {
+	c.Lock()
+	defer c.Unlock()
 	if c.ticker == nil {
 		c.parameters = p
 		c.ticker = time.Tick(time.Second * 5)
 		go func() {
 			<-c.ticker
-			c.ticker = nil
 			c.Lock()
+			defer c.Unlock()
+			c.ticker = nil
 			if c.excutor(c.parameters) == nil {
 				c.parameters = nil
 			}
-			c.Unlock()
 		}()
 	} else {
-		c.Lock()
 		c.parameters = append(c.parameters, p...)
-		c.Unlock()
 	}
 }
