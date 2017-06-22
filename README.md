@@ -1,3 +1,6 @@
+
+[![CircleCI](https://circleci.com/gh/DoloresTeam/dolores-server/tree/master.svg?style=shield)](https://circleci.com/gh/DoloresTeam/dolores-server/tree/master)
+
 # dolores-server
 服务端主要做两件事：
 
