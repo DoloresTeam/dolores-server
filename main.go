@@ -49,7 +49,7 @@ var em *easemob.EM
 
 // 将短时间内多次服务器通知合并起来，发给客户端
 var organizationViewChangeEvent = make(chan []string, 10)
-var com = new(func(arg1 []string) error {
+var combiner = new(func(arg1 []string) error {
 	if em != nil {
 		return em.SendCMDMsg(arg1, `sync_organization`)
 	}
@@ -97,8 +97,7 @@ func main() {
 	}
 	go func() {
 		for {
-			mids := <-organizationViewChangeEvent
-			com.push(mids)
+			combiner.push(<-organizationViewChangeEvent)
 		}
 	}()
 
