@@ -76,9 +76,7 @@ func updateProfile(c *gin.Context) {
 		return
 	}
 
-	err = org.ModifyMember(id.(string), map[string][]string{
-		`labeledURI`: []string{body[`avatarURL`].(string)},
-	})
+	err = org.ModifyMember(id.(string), info)
 
 	if err != nil {
 		sendError(c, err)
