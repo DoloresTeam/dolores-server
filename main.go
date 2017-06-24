@@ -105,7 +105,7 @@ func main() {
 	org = _org
 
 	r := gin.Default()
-	r.Use(CORSMiddleware()) // 允许跨站请求
+	// r.Use(CORSMiddleware()) // 允许跨站请求
 
 	r.Use(static.Serve(`/`, static.LocalFile(`./webroot`, true)))
 
