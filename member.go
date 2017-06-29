@@ -83,7 +83,7 @@ func createMember(c *gin.Context) {
 	m.Write([]byte(`123456`))
 	pwd := m.Sum(nil)
 
-	memberInfo[`userPassword`] = []string{fmt.Sprintf(`{MD5}%s`, hex.EncodeToString(pwd))}
+	memberInfo[`userPassword`] = []string{hex.EncodeToString(pwd)}
 
 	id, err := org.AddMember(memberInfo)
 	if err != nil {
