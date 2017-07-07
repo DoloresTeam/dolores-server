@@ -40,7 +40,7 @@ cd dolores-server && go build
 ![目录结构](./asset/files.png)
 ### 配置
 
-1. dolores使用了环信的云服务来处理IM消息，所以您需要先注册去环信注册一个账号获取 `ClientID` 、`Secret`。[点击立即申请](http://docs.easemob.com/im/000quickstart/10register)
+1. dolores使用了环信的云服务来处理IM消息，所以您需要先去环信注册一个账号获取 `ClientID` 、`Secret`。[点击立即申请](http://docs.easemob.com/im/000quickstart/10register)
 
 2.  dolores 使用七牛存储用户头像等其他文件，所以你需要注册一个七牛账号获取 `AccessKey`、`SecretKey`. [点击立即申请](https://developer.qiniu.com/kodo/manual/1233/console-quickstart)
 
