@@ -42,7 +42,7 @@ func mapToMemberInfo(body map[string]interface{}) map[string][]string {
 	if priority, ok := body[`priority`].(string); ok {
 		memberInfo[`priority`] = []string{priority}
 	} else {
-		memberInfo[`priority`] = `0`
+		memberInfo[`priority`] = []string{`0`}
 	}
 	if telephoneNumber, ok := body[`telephoneNumber`].(string); ok {
 		memberInfo[`telephoneNumber`] = []string{telephoneNumber}
