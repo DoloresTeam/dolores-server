@@ -4,7 +4,7 @@
 # dolores-server
 服务端主要做两件事：
 
- - 为客户端提供组织架构 REST API
+ - 为客户端提供组织架构 [REST API](https://github.com/DoloresTeam/dolores-server/blob/master/api_doc.md)
  - 提供一个用于管理组织架构的Web APP
 
 *请确认您已经安装数据库，如未安装[请移步这里](https://github.com/DoloresTeam/dolores-ldap-init)*
