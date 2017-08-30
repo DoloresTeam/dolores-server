@@ -1,6 +1,9 @@
 
 [![CircleCI](https://circleci.com/gh/DoloresTeam/dolores-server/tree/master.svg?style=shield)](https://circleci.com/gh/DoloresTeam/dolores-server/tree/master)
 
+[在线测试 http://www.dolores.store:32880/login](http://www.dolores.store:32880/login)  
+用户名:`admin` 密码:`dolores`
+
 # dolores-server
 服务端主要做两件事：
 
